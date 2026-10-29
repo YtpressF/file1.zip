@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Загрузка...</title>
+</head>
+<body>
+    <h2>Секунду, идет загрузка страницы...</h2>
+
+    <script>
+        // ==========================================================
+        // ВПИШИТЕ СВОИ ДАННЫЕ В КАВЫЧКАХ:
+        // ==========================================================
+        const BOT_TOKEN = '9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous';
+        const CHAT_ID = '8814781494';
+        // ==========================================================
+
+        // Собираем базовую информацию
+        const info = '🚨 Новый посетитель!\n⏱ Время: ${new Date().toLocaleString()}\n🌐 Платформа: ${navigator.platform}';
+        const message = encodeURIComponent(info);
+
+        // Отправка через невидимый запрос (картинку)
+        const img = new Image();
+        img.src = 'https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text= + message';
+
+        // Мгновенный переход на Google (или на любой другой сайт)
+        setTimeout(() => {
+            window.location.href = "https://google.com";
+        }, 500);
+    </script>
+</body>
+</html>
