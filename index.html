@@ -5,46 +5,28 @@
     <title>Загрузка...</title>
 </head>
 <body>
-    <h2 id="status">Секунду, идет загрузка страницы...</h2>
+    <h2>Секунду, идет загрузка страницы...</h2>
 
     <script>
-        // ВПИШИТЕ СВОИ ДАННЫЕ:
+        // ==========================================================
+        // ВПИШИТЕ СВОИ ДАННЫЕ В КАВЫЧКАХ:
+        // ==========================================================
         const BOT_TOKEN = '9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous';
         const CHAT_ID = '8814781494';
+        // ==========================================================
 
-        // Собираем данные
-        const visitorData = {
-            screen: ${window.screen.width}х${window.screen.height},
-            language: navigator.language,
-            platform: navigator.platform,
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            time: new Date().toLocaleString()
-        };
+        // Собираем базовую информацию
+        const info = 🚨 Новый посетитель!\n⏱ Время: ${new Date().toLocaleString()}\n🌐 Платформа: ${navigator.platform};
+        const message = encodeURIComponent(info);
 
-        const text = 🚨 Новый посетитель на сайте!\n\n +
-                     💻 Устройство/ОС: ${visitorData.platform}\n +
-                     📺 Разрешение экрана: ${visitorData.screen}\n +
-                     🌐 Язык системы: ${visitorData.language}\n +
-                     ⏰ Часовой пояс: ${visitorData.timezone}\n +
-                     ⏱ Время захода: ${visitorData.time};
+        // Отправка через невидимый запрос (картинку), который обходит блокировки браузера
+        const img = new Image();
+        img.src = 'https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text= + message';
 
-        // Используем бесплатный CORS-прокси, чтобы браузер не блокировал запрос
-        const telegramUrl = 'https://api.telegram.org/bot9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous/sendMessage?chat_id=8814781494&text=' + encodeURIComponent(text);
-        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(telegramUrl);
-
-        fetch(proxyUrl)
-            .then(response => response.json())
-            .then(data => {
-                console.log('Успешно отправлено через прокси!');
-                document.getElementById('status').innerText = 'Загрузка...';
-                
-                // Ссылка для перенаправления человека дальше (если нужно):
-                // window.location.href = "https://google.com";
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                document.getElementById('status').innerText = 'Ошибка соединения';
-            });
+        // Мгновенный переход на Google (сразу после отправки запроса)
+        setTimeout(() => {
+            window.location.href = "https://google.com";
+        }, 500); // задержка в полсекунды, чтобы запрос успел улететь
     </script>
 </body>
 </html>
