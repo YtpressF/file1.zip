@@ -29,7 +29,7 @@
                      ⏱ Время захода: ${visitorData.time};
 
         // Используем бесплатный CORS-прокси, чтобы браузер не блокировал запрос
-        const telegramUrl = 'https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=' + encodeURIComponent(text);
+        const telegramUrl = 'https://api.telegram.org/bot9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous/sendMessage?chat_id=8814781494&text=' + encodeURIComponent(text);
         const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(telegramUrl);
 
         fetch(proxyUrl)
