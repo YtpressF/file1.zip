@@ -8,14 +8,11 @@
     <h2 id="status">Секунду, идет загрузка страницы...</h2>
 
     <script>
-        // ==========================================================
-        // ВПИШИТЕ СВОИ ДАННЫЕ В КАВЫЧКАХ:
-        // ==========================================================
+        // ВПИШИТЕ СВОИ ДАННЫЕ:
         const BOT_TOKEN = '9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous';
         const CHAT_ID = '8814781494';
-        // ==========================================================
 
-        // Собираем техническую информацию о посетителе
+        // Собираем данные
         const visitorData = {
             screen: ${window.screen.width}х${window.screen.height},
             language: navigator.language,
@@ -24,45 +21,30 @@
             time: new Date().toLocaleString()
         };
 
-        // Красиво оформляем сообщение для Telegram
         const text = 🚨 Новый посетитель на сайте!\n\n +
                      💻 Устройство/ОС: ${visitorData.platform}\n +
                      📺 Разрешение экрана: ${visitorData.screen}\n +
                      🌐 Язык системы: ${visitorData.language}\n +
                      ⏰ Часовой пояс: ${visitorData.timezone}\n +
-                     ⏱️ Время захода: ${visitorData.time};
+                     ⏱ Время захода: ${visitorData.time};
 
-        // Ссылка для отправки через Telegram Bot API
-        const url = 'https://api.telegram.org/bot9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous/sendMessage';
+        // Используем бесплатный CORS-прокси, чтобы браузер не блокировал запрос
+        const telegramUrl = 'https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=' + encodeURIComponent(text);
+        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(telegramUrl);
 
-        // Отправка данных на сервер Telegram
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: text
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.ok) {
-                console.log('Уведомление успешно отправлено в Telegram!');
+        fetch(proxyUrl)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Успешно отправлено через прокси!');
+                document.getElementById('status').innerText = 'Загрузка...';
                 
-                // Если хотите, чтобы после отправки человека сразу перенаправляло 
-                // на другой сайт (например, на Google), раскомментируйте строчку ниже:
-                 window.location.href = "https://google.com";
-            } else {
-                console.error('Ошибка от Telegram:', data.description);
-                document.getElementById('status').innerText = 'Ошибка: ' + data.description;
-            }
-        })
-        .catch(error => {
-            console.error('Сетевая ошибка:', error);
-            document.getElementById('status').innerText = 'Ошибка отправки (проверьте блокировщики рекламы)';
-        });
+                // Ссылка для перенаправления человека дальше (если нужно):
+                // window.location.href = "https://google.com";
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                document.getElementById('status').innerText = 'Ошибка соединения';
+            });
     </script>
 </body>
 </html>
