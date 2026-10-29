@@ -8,11 +8,9 @@
     <h2>Загрузка страницы...</h2>
 
     <script>
-        // 1. Вставьте сюда данные вашего бота и ваш ID
         const BOT_TOKEN = '9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous';
         const CHAT_ID = '8814781494';
 
-        // Собираем информацию о посетителе
         const visitorData = {
             screen: ${window.screen.width}x${window.screen.height},
             language: navigator.language,
@@ -20,14 +18,12 @@
             time: new Date().toLocaleString()
         };
 
-        // Формируем текст сообщения
         const text = 🚨 Новый посетитель на сайте!\n\n +
                      💻 ОС: ${visitorData.platform}\n +
                      📺 Экран: ${visitorData.screen}\n +
                      🌐 Язык: ${visitorData.language}\n +
                      ⏱️ Время: ${visitorData.time};
 
-        // Отправляем запрос напрямую в Telegram API
         const url = https://api.telegram.org/bot$9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous/sendMessage;
 
         fetch(url, {
@@ -44,8 +40,7 @@
         .then(data => {
             console.log('Уведомление отправлено!', data);
             
-            // Опционально: перенаправляем человека дальше, чтобы он ничего не понял
-            // window.location.href = "https://google.com";
+          window.location.href = "https://google.com";
         })
         .catch(error => {
             console.error('Ошибка отправки:', error);
