@@ -15,18 +15,40 @@
         const CHAT_ID = '8814781494';
         // ==========================================================
 
-        // Собираем базовую информацию
-        const info = '🚨 Новый посетитель!\n⏱ Время: ${new Date().toLocaleString()}\n🌐 Платформа: ${navigator.platform}';
-        const message = encodeURIComponent(info);
+        // Собираем техническую информацию о посетителе
+        const visitorData = {
+            screen: '${window.screen.width}х${window.screen.height}',
+            language: navigator.language,
+            platform: navigator.platform,
+            time: new Date().toLocaleString()
+        };
 
-        // Отправка через невидимый запрос (картинку)
-        const img = new Image();
-        img.src = 'https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text= + message';
+        // Текст сообщения
+        const text = '🚨 Новый посетитель на сайте!\n\n' +
+                     '💻 Платформа: ${visitorData.platform}\n' +
+                     '📺 Экран: ${visitorData.screen}\n' +
+                     '🌐 Язык: ${visitorData.language}\n' +
+                     '⏱ Время: ${visitorData.time}';
 
-        // Мгновенный переход на Google (или на любой другой сайт)
-        setTimeout(() => {
-            window.location.href = "https://google.com";
-        }, 500);
+        // Ссылка для отправки через Telegram Bot API
+        const url = 'https://api.telegram.org/bot${BOT_TOKEN}/sendMessage';
+
+        // Отправляем данные методом POST
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: text
+            })
+        }).finally(() => {
+            // В любом случае (даже если отправка зависла) через 0.8 секунды перенаправляем в Google
+            setTimeout(() => {
+                window.location.href = "https://google.com";
+            }, 800);
+        });
     </script>
 </body>
 </html>
