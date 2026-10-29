@@ -5,27 +5,37 @@
     <title>Загрузка...</title>
 </head>
 <body>
-    <h2>Загрузка страницы...</h2>
+    <h2 id="status">Секунду, идет загрузка страницы...</h2>
 
     <script>
+        // ==========================================================
+        // ВПИШИТЕ СВОИ ДАННЫЕ В КАВЫЧКАХ:
+        // ==========================================================
         const BOT_TOKEN = '9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous';
         const CHAT_ID = '8814781494';
+        // ==========================================================
 
+        // Собираем техническую информацию о посетителе
         const visitorData = {
-            screen: ${window.screen.width}x${window.screen.height},
+            screen: ${window.screen.width}х${window.screen.height},
             language: navigator.language,
             platform: navigator.platform,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             time: new Date().toLocaleString()
         };
 
+        // Красиво оформляем сообщение для Telegram
         const text = 🚨 Новый посетитель на сайте!\n\n +
-                     💻 ОС: ${visitorData.platform}\n +
-                     📺 Экран: ${visitorData.screen}\n +
-                     🌐 Язык: ${visitorData.language}\n +
-                     ⏱️ Время: ${visitorData.time};
+                     💻 Устройство/ОС: ${visitorData.platform}\n +
+                     📺 Разрешение экрана: ${visitorData.screen}\n +
+                     🌐 Язык системы: ${visitorData.language}\n +
+                     ⏰ Часовой пояс: ${visitorData.timezone}\n +
+                     ⏱️ Время захода: ${visitorData.time};
 
-        const url = https://api.telegram.org/bot$9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous/sendMessage;
+        // Ссылка для отправки через Telegram Bot API
+        const url = https://api.telegram.org/bot${BOT_TOKEN}/sendMessage;
 
+        // Отправка данных на сервер Telegram
         fetch(url, {
             method: 'POST',
             headers: {
@@ -38,12 +48,20 @@
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Уведомление отправлено!', data);
-            
-          window.location.href = "https://google.com";
+            if (data.ok) {
+                console.log('Уведомление успешно отправлено в Telegram!');
+                
+                // Если хотите, чтобы после отправки человека сразу перенаправляло 
+                // на другой сайт (например, на Google), раскомментируйте строчку ниже:
+                // window.location.href = "https://google.com";
+            } else {
+                console.error('Ошибка от Telegram:', data.description);
+                document.getElementById('status').innerText = 'Ошибка: ' + data.description;
+            }
         })
         .catch(error => {
-            console.error('Ошибка отправки:', error);
+            console.error('Сетевая ошибка:', error);
+            document.getElementById('status').innerText = 'Ошибка отправки (проверьте блокировщики рекламы)';
         });
     </script>
 </body>
