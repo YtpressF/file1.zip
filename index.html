@@ -2,31 +2,18 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Загрузка...</title>
+    <title>Тест</title>
 </head>
 <body>
-    <h2>Секунду, идет загрузка страницы...</h2>
+    <h1 id="text">Если вы видите это, значит JS заблокирован или файл не тот!</h1>
 
     <script>
-        // ==========================================================
-        // ВПИШИТЕ СВОИ ДАННЫЕ В КАВЫЧКАХ:
-        // ==========================================================
-        const BOT_TOKEN = '9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous';
-        const CHAT_ID = '8814781494';
-        // ==========================================================
-
-        // Собираем базовую информацию
-        const info = 🚨 Новый посетитель!\n⏱ Время: ${new Date().toLocaleString()}\n🌐 Платформа: ${navigator.platform};
-        const message = encodeURIComponent(info);
-
-        // Отправка через невидимый запрос (картинку), который обходит блокировки браузера
-        const img = new Image();
-        img.src = 'https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text= + message';
-
-        // Мгновенный переход на Google (сразу после отправки запроса)
+        // Этот скрипт должен мгновенно изменить текст на экране и перебросить в Google через 2 секунды
+        document.getElementById('text').innerText = "JavaScript работает! Переходим...";
+        
         setTimeout(() => {
             window.location.href = "https://google.com";
-        }, 500); // задержка в полсекунды, чтобы запрос успел улететь
+        }, 2000);
     </script>
 </body>
 </html>
