@@ -11,36 +11,24 @@
         const BOT_TOKEN = "9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous";
         const CHAT_ID = "8814781494";
 
-        const part1 = "🚨 Новый посетитель на сайте!\n" +
-                      "⏱ Время: " + new Date().toLocaleTimeString() + "\n" +
-                      "💻 Платформа: " + navigator.platform + "\n" +
-                      "🗣 Язык: " + navigator.language;
+        // Собираем базовую информацию без внешних запросов, которые могут блокироваться
+        const info = "🚨 Новый посетитель на сайте!\n\n" +
+                     "⏱ Время: " + new Date().toLocaleString() + "\n" +
+                     "💻 Платформа: " + navigator.platform + "\n" +
+                     "🗣 Язык: " + navigator.language + "\n" +
+                     "📺 Экран: " + window.screen.width + "x" + window.screen.height + "\n" +
+                     "🧠 Память (RAM): " + (navigator.deviceMemory ? navigator.deviceMemory + " GB+" : "неизвестно") + "\n" +
+                     "⚙️ Ядра процессора: " + (navigator.hardwareConcurrency || "неизвестно") + "\n" +
+                     "🔗 Источник: " + (document.referrer || "прямой заход") + "\n" +
+                     "📱 User-Agent: " + navigator.userAgent;
 
-        const part2 = "📺 Экран: " + window.screen.width + "x" + window.screen.height + "\n" +
-                      "🧠 ОЗУ: " + (navigator.deviceMemory ? navigator.deviceMemory + "GB" : "н/д") + "\n" +
-                      "⚙️ Ядра: " + (navigator.hardwareConcurrency || "н/д") + "\n" +
-                      "🔗 Источник: " + (document.referrer ? new URL(document.referrer).hostname : "прямой");
+        const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(info);
 
-        const fullInfo = part1 + "\n\n-------------------\n\n" + part2;
+        // Отправляем запрос в Telegram, но НЕ ждем его завершения для редиректа,
+        // чтобы страница не зависала, если Telegram или сеть заблокированы.
+        fetch(url).catch(function() {});
 
-        const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage";
-        
-        const data = JSON.stringify({
-            chat_id: CHAT_ID,
-            text: fullInfo
-        });
-
-        // Отправляем через fetch (POST)
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: data,
-            keepalive: true // Позволяет запросу завершиться даже если страница начинает перенаправление
-        }).catch(function() {});
-
-        // Перенаправление с небольшой задержкой (0.5 сек), чтобы запрос успел уйти
+        // Перенаправление на целевой сайт через 500 миллисекунд
         setTimeout(function() {
             window.location.href = "https://google.com";
         }, 500);
